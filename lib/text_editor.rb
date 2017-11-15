@@ -24,21 +24,21 @@ class TextEditor
   end
 
   def find_line(pattern)
-    pattern = to_regexrpr_if_string(pattern)
+    pattern = to_regexp(pattern)
     content = read_content()
-    content.lines().each_with_index do |line, linum|
-      return linum + 1 if pattern =~ line
+    content.lines().each_with_index do |line, index|
+      return index + 1 if pattern =~ line
     end
     nil
   end
 
   private
 
-  def to_regexrpr_if_string(pattern)
+  def to_regexp(pattern)
     if pattern.is_a?(Regexp)
       pattern
     else
-      TextUtil.to_regexpr(pattern)
+      TextUtil.to_regexpr(pattern.to_s())
     end
   end
 
@@ -52,12 +52,10 @@ class TextEditor
   end
 
   def validate_linum(linum, max_linum = nil)
-    unless valid_range(linum, max_linum)
-      raise "Invalid line range: `#{linum}`" 
-    end
+    raise "Invalid line range: `#{linum}`" unless valid_range?(linum, max_linum)
   end
 
-  def valid_range(linum, max)
+  def valid_range?(linum, max)
     linum > 0 && (!max || linum <= max)
   end
 
