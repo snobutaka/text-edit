@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'text_editor'
 require 'tempfile'
 
-describe TextUtil do
+describe TextEditor do
   it "reads text file" do
     content = "Hello world!"
     tempfile = create_tmp_file(content)
@@ -12,8 +12,8 @@ describe TextUtil do
   end
 end
 
-describe TextUtil do
-  it "finds line" do
+describe TextEditor do
+  it "finds line by strings" do
     content = ["one", "two", "three"].join("\n")
     tempfile = create_tmp_file(content)
 
@@ -21,11 +21,32 @@ describe TextUtil do
     expect(editor.find_line("one")).to eq 1
     expect(editor.find_line("two")).to eq 2
     expect(editor.find_line("three")).to eq 3
+  end
+end
+
+describe TextEditor do
+  it "finds line by regular expressions" do
+    content = ["one", "two", "three"].join("\n")
+    tempfile = create_tmp_file(content)
+
+    editor = TextEditor.new(tempfile)
+    expect(editor.find_line(/.*n.*/)).to eq 1
+    expect(editor.find_line(/.*w.*/)).to eq 2
+    expect(editor.find_line(/.*hre.*/)).to eq 3
+  end
+end
+
+describe TextEditor do
+  it "returns nil if cannot find line" do
+    content = ["one", "two", "three"].join("\n")
+    tempfile = create_tmp_file(content)
+
+    editor = TextEditor.new(tempfile)
     expect(editor.find_line("four")).to eq nil
   end
 end
 
-describe TextUtil do
+describe TextEditor do
   it "inserts a line to file" do
     content = "one\n"
     tempfile = create_tmp_file(content)
@@ -36,15 +57,18 @@ describe TextUtil do
   end
 end
 
-describe TextUtil do
-  it "finds line and insert line" do
+describe TextEditor do
+  it "finds line and inserts line" do
     content = ["one","two","four"].join("\n")
     tempfile = create_tmp_file(content)
 
     editor = TextEditor.new(tempfile)
     linum = editor.find_line("four")
-    expect(editor.insert_line(linum, "three")).to eq "one\ntwo\nthree\nfour"
-    expect(File.read(tempfile)).to eq "one\ntwo\nthree\nfour\n"
+    inserted_content = editor.insert_line(linum, "three")
+
+    expected = ["one", "two", "three", "four"].join("\n")
+    expect(inserted_content).to eq expected
+    expect(File.read(tempfile)).to eq expected + "\n"
   end
 end
 
