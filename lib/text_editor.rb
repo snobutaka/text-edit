@@ -20,8 +20,7 @@ class TextEditor
   end
   
   def insert_line(line_num, line)
-    content = read_content()
-    lines = content.lines().map!{ |line| line.chomp() }
+    lines = get_lines()
     validate_linum(line_num, lines.size() + 1)
     lines.insert(line_num - 1, line)
     debug(lines)
@@ -50,13 +49,13 @@ class TextEditor
   end
 
   def append_line(newline)
-    lines = read_content().lines().map!{ |line| line.chomp() }
+    lines = get_lines()
     lines.push(newline)
     write_content(lines.join("\n"))
   end
 
   def delete_line(line_num)
-    lines = read_content().lines().map!{ |line| line.chomp() }
+    lines = get_lines()
     validate_linum(line_num, lines.size())
     lines.delete_at(line_num - 1)
     write_content(lines.join("\n"))
@@ -81,6 +80,11 @@ class TextEditor
 
   def read_content()
     File.read(@file_path)
+  end
+
+  def get_lines(content = nil)
+    content = read_content() unless content
+    content.chomp().lines().map!{ |line| line.chomp() }
   end
 
   def write_content(content)
