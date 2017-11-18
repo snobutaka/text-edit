@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'text_editor'
+require 'tmpdir'
 require 'tempfile'
 
 describe TextEditor do
@@ -69,6 +70,37 @@ describe TextEditor do
     expected = ["one", "two", "three", "four"].join("\n")
     expect(inserted_content).to eq expected
     expect(File.read(tempfile)).to eq expected + "\n"
+  end
+end
+
+describe TextEditor do
+  it "counts the number of lines" do
+    tempfile = create_tmp_file(["one", "two", "three"].join("\n"))
+    expect(TextEditor.new(tempfile).count_lines()).to eq 3
+
+    tempfile = create_tmp_file(["one", "two", "three"].join("\n") + "\n")
+    expect(TextEditor.new(tempfile).count_lines()).to eq 3
+  end
+end
+
+describe TextEditor do
+  it "creates file if given file does not exist" do
+    Dir.mktmpdir() do |dir|
+      test_file = File.join(dir, "test.txt")
+      expect(File.exist?(test_file)).to be_falsey
+      
+      editor = TextEditor.new(test_file)
+      expect(File.exist?(test_file)).to be_truthy
+      expect(editor.read()).to eq ""
+    end
+  end
+end
+
+describe TextEditor do
+  it "appends line" do
+    tempfile = create_tmp_file(["one", "two"].join("\n"))
+    TextEditor.new(tempfile).append("three")
+    expect(File.read(tempfile)).to eq ["one", "two", "three"].join("\n") + "\n"
   end
 end
 

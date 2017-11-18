@@ -1,15 +1,22 @@
+require 'fileutils'
 require_relative 'text_util'
 
 class TextEditor
   def initialize(file_path, print_debug = false)
     @file_path = file_path
-    @print_debug
+    FileUtils.touch(file_path) unless File.exist?(file_path)
+    @print_debug = print_debug
   end
 
   def read()
     content = read_content()
     debug(content)
     content
+  end
+
+  def count_lines(content = nil)
+    content = read_content() unless content
+    content.chomp().lines.size()
   end
   
   def insert_line(line_num, line)
@@ -30,6 +37,12 @@ class TextEditor
       return index + 1 if pattern =~ line
     end
     nil
+  end
+
+  def append(newline)
+    lines = read_content().lines().map!{ |line| line.chomp() }
+    lines.push(newline)
+    write_content(lines.join("\n"))
   end
 
   private
