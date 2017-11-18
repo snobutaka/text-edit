@@ -126,7 +126,7 @@ describe TextEditor do
 end
 
 describe TextEditor do
-  it "fails to delete line if line number if out of ranse" do
+  it "fails to delete line if line number is out of ranse" do
     tempfile = create_tmp_file(["one", "two", "three"].join("\n"))
     editor = TextEditor.new(tempfile)
     expect{editor.delete_line(0)}.to raise_error(RuntimeError, /Invalid line range: `\d+`/)
