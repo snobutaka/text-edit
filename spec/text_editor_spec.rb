@@ -48,6 +48,19 @@ describe TextEditor do
 end
 
 describe TextEditor do
+  it "finds lines" do
+    tempfile = create_tmp_file(["one", "two", "three"].join("\n"))
+    editor = TextEditor.new(tempfile)
+    
+    lines = editor.find_lines(/.*e.*/)
+    expect(lines).to eq [1, 3]
+
+    lines = editor.find_lines("four")
+    expect(lines).to eq []
+  end
+end
+
+describe TextEditor do
   it "inserts a line to file" do
     content = "one\n"
     tempfile = create_tmp_file(content)
@@ -97,10 +110,35 @@ describe TextEditor do
 end
 
 describe TextEditor do
-  it "appends line" do
+  it "appends a line" do
     tempfile = create_tmp_file(["one", "two"].join("\n"))
-    TextEditor.new(tempfile).append("three")
+    TextEditor.new(tempfile).append_line("three")
     expect(File.read(tempfile)).to eq ["one", "two", "three"].join("\n") + "\n"
+  end
+end
+
+describe TextEditor do
+  it "deletes a line" do
+    tempfile = create_tmp_file(["one", "two", "three"].join("\n"))
+    TextEditor.new(tempfile).delete_line(2)
+    expect(File.read(tempfile)).to eq ["one", "three"].join("\n") + "\n"
+  end
+end
+
+describe TextEditor do
+  it "fails to delete line if line number if out of ranse" do
+    tempfile = create_tmp_file(["one", "two", "three"].join("\n"))
+    editor = TextEditor.new(tempfile)
+    expect{editor.delete_line(0)}.to raise_error(RuntimeError, /Invalid line range: `\d+`/)
+    expect{editor.delete_line(4)}.to raise_error(RuntimeError, /Invalid line range: `\d+`/)
+  end
+end
+
+describe TextEditor do
+  it "replaces words in file" do
+    tempfile = create_tmp_file(["one", "two", "three"].join("\n"))
+    TextEditor.new(tempfile).replace("w", "a")
+    expect(File.read(tempfile)).to eq ["one", "tao", "three"].join("\n") + "\n"
   end
 end
 

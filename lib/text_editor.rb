@@ -34,15 +34,39 @@ class TextEditor
     pattern = to_regexp(pattern)
     content = read_content()
     content.lines().each_with_index do |line, index|
-      return index + 1 if pattern =~ line
+      return index + 1 if pattern =~ line.chomp()
     end
     nil
   end
 
-  def append(newline)
+  def find_lines(pattern)
+    pattern = to_regexp(pattern)
+    content = read_content()
+    lines = []
+    content.lines().each_with_index().map() do |line, index|
+      lines.push(index + 1) if pattern =~ line.chomp()
+    end
+    lines
+  end
+
+  def append_line(newline)
     lines = read_content().lines().map!{ |line| line.chomp() }
     lines.push(newline)
     write_content(lines.join("\n"))
+  end
+
+  def delete_line(line_num)
+    lines = read_content().lines().map!{ |line| line.chomp() }
+    validate_linum(line_num, lines.size())
+    lines.delete_at(line_num - 1)
+    write_content(lines.join("\n"))
+  end
+
+  def replace(target, word)
+    content = read_content()
+    content.gsub!(target, word)
+    write_content(content)
+    content
   end
 
   private
