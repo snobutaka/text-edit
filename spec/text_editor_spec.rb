@@ -14,6 +14,18 @@ describe TextEditor do
 end
 
 describe TextEditor do
+  it "reads specified line" do
+    tempfile = create_tmp_file(["one", "two", "three"].join("\n"))
+    editor = TextEditor.new(tempfile)
+    expect(editor.read_line(0)).to eq nil
+    expect(editor.read_line(1)).to eq "one"
+    expect(editor.read_line(2)).to eq "two"
+    expect(editor.read_line(3)).to eq "three"
+    expect(editor.read_line(4)).to eq nil
+  end
+end
+
+describe TextEditor do
   it "finds line by strings" do
     content = ["one", "two", "three"].join("\n")
     tempfile = create_tmp_file(content)
