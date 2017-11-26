@@ -15,9 +15,9 @@ class TextEditor
   end
 
   def read_line(linum)
-    lines = self.read().lines()
+    lines = get_lines()
     return nil unless valid_range?(linum, lines.size())
-    lines.fetch(linum - 1).chomp()
+    lines.fetch(linum - 1)
   end
 
   def count_lines(content = nil)
