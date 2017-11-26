@@ -13,6 +13,21 @@ describe PropertyEditor do
 end
 
 describe PropertyEditor do
+  it "gets property value, = is surrounded by spaces" do
+    tempfile = create_tempfile([
+      "one    =    1",
+      "two    =    2",
+      "three  =    3"
+    ].join("\n"))
+    editor = PropertyEditor.new(tempfile)
+    
+    expect(editor.get("one")).to eq "1"
+    expect(editor.get("two")).to eq "2"
+    expect(editor.get("three")).to eq "3"
+  end
+end
+
+describe PropertyEditor do
   it "adds property value" do
     tempfile = create_tempfile(["one=1", "two=2"].join("\n"))
     editor = PropertyEditor.new(tempfile)
@@ -27,6 +42,23 @@ describe PropertyEditor do
     editor = PropertyEditor.new(tempfile)
     editor.set("two", "0x10")
     expect(File.read(tempfile)).to eq ["one=1", "two=0x10", "three=3"].join("\n") + "\n"
+  end
+end
+
+describe PropertyEditor do
+  it "changes property value, = is surrounded by spaces" do
+    tempfile = create_tempfile([
+      "one    =    1",
+      "two    =    2",
+      "three  =    3"
+    ].join("\n"))
+    editor = PropertyEditor.new(tempfile)
+    editor.set("two", "0x10")
+    expect(File.read(tempfile)).to eq [
+      "one    =    1",
+      "two=0x10",
+      "three  =    3"
+    ].join("\n") + "\n"
   end
 end
 
